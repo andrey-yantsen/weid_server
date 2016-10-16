@@ -19,6 +19,3 @@ class ProviderAux {
 		return "data:image/svg+xml;base64,".$rawsvg;
 	}
 };
-
-
-?>

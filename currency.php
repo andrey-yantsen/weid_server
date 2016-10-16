@@ -11,8 +11,8 @@ class CurrencyExchangeProvider implements ServiceProvider {
 	public $width;
 	public $height;
 
-	function CurrencyExchangeProvider() {
-		$this->cpair = "EUR/USD";
+	public function __construct() {
+		$this->cpair = "USD/RUB";
 		$this->width = 800;
 		$this->height = 100;
 		$this->font_size = 1;
@@ -51,12 +51,12 @@ class CurrencyExchangeProvider implements ServiceProvider {
 
 		$rate = $exchange["rates"][$to];
 
-		// Generate an SVG image out of this 
+		// Generate an SVG image out of this
 		return sprintf(
-			'<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg" 
+			'<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink">
                 <text text-anchor="middle" x="50%%" y="80%%" fill="black" style="font-size: %dpx; font-family: %s;">
-					%s %0.3f
+					%s %0.2f
 				</text>
 			</svg>', $this->width, $this->height,
 			    $this->font_size * $this->height, $this->font_family,

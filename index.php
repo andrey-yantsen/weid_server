@@ -1,6 +1,9 @@
 <?php
-
+date_default_timezone_set('UTC');
 require_once("functions.php");
+require_once("config.php");
+
+setlocale(LC_ALL, GlobalConfig::$locale . '.UTF-8');
 
 // Make sure it's private network only
 checkUserAuth(false);
@@ -19,17 +22,16 @@ if (isset($_GET["action"]) && isset($_GET["id"]) && $_GET["action"] == "render")
 // Render a screen
 if (isset($_GET["action"]) && isset($_GET["id"]) && $_GET["action"] == "renderpng") {
 	$im = renderBMP($_GET["id"], $numc, 0, 0);
-
     header('Content-type: image/png');
-	die($im);
+	die($im->getImageBlob());
 }
 
 // Render a screen
 if (isset($_GET["action"]) && isset($_GET["id"]) && $_GET["action"] == "rendereink") {
 	$im = renderBMP($_GET["id"], $numc, 0, 0);
 
-    header('Content-type: application/octet-stream');
-    header('Content-Length: 61440');
+    // header('Content-type: application/octet-stream');
+    // header('Content-Length: 61440');
 
 	// Calculate the bit packing for the number of colors.
 	$numbits = intval(log10($numc)/log10(2));

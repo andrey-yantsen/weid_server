@@ -12,7 +12,7 @@ class WeatherForecastProvider implements ServiceProvider {
 	public $height;
 	public $ndays;
 
-	function WeatherForecastProvider() {
+	public function __construct() {
 		$this->location = "Barcelona,ES";
 		$this->width = 1000;
 		$this->height = 200;
@@ -49,7 +49,7 @@ class WeatherForecastProvider implements ServiceProvider {
     public function render() {
 		// Gather information from OpenWeatherMap
 		$raw = file_get_contents(
-			"http://api.openweathermap.org/data/2.5/forecast/daily?cnt=".($this->ndays+1)."&q=".$this->location."&APPID=".GlobalConfig::$weather_api_key
+			"http://api.openweathermap.org/data/2.5/forecast/daily?cnt=".($this->ndays+1)."&q=".urlencode($this->location)."&APPID=".GlobalConfig::$weather_api_key
 		);
 		$weather = json_decode($raw, true);
 
@@ -59,34 +59,34 @@ class WeatherForecastProvider implements ServiceProvider {
 		$nd = count($forecast)-1;
 		for ($i = 0; $i < $nd; $i++) {
 			$icon = $forecast[$i+1]["weather"][0]["icon"];
-			$dayn = date('D', $forecast[$i+1]["dt"]);
+			$dayn = strftime('%a', $forecast[$i+1]["dt"]);
 			$mint = $forecast[$i+1]["temp"]["min"] - 273.15;
 			$maxt = $forecast[$i+1]["temp"]["max"] - 273.15;
 
 			$daily[] = sprintf(
 				'<image x="%d" y="%d" width="%d" height="%d" xlink:href="%s" />
-				<text alignment-baseline="central" text-anchor="middle" x="%d" y="%d" fill="black" style="font-size: %dpx; font-style: %s; font-weight: bold;">
+				<text alignment-baseline="central" text-anchor="middle" x="%d" y="%d" fill="black" style="font-size: %dpx; font-family: %s; font-weight: bold;">
 				%s
 				</text>
-				<text alignment-baseline="central" text-anchor="middle" x="%d" y="%d" fill="black" style="font-size: %dpx; font-style: %s; font-weight: bold;">
+				<text alignment-baseline="central" text-anchor="middle" x="%d" y="%d" fill="black" style="font-size: %dpx; font-family: %s; font-weight: bold;">
 				%d° %d°
 				</text>
 				',
 				$this->width / $nd * ($i + 0.05), $this->height * 0.15,
 				$this->width / $nd * 0.9, $this->height * 0.6,
 				ProviderAux::embedSVG("resources/".$this->imgmap[$icon].".svg"),
-				$this->width / $nd * ($i + 0.5), 0.12  * $this->height,
-				$this->font_size * $this->height, $this->font_family,
+				$this->width / $nd * ($i + 0.5), 0.11  * $this->height,
+				0.95 * $this->font_size * $this->height, $this->font_family,
 				$dayn,
-				$this->width / $nd * ($i + 0.5), 0.92  * $this->height,
+				$this->width / $nd * ($i + 0.55), 0.92  * $this->height,
 				$this->font_size * $this->height, $this->font_family,
 				$mint, $maxt
 			);
 		}
 
-		// Generate an SVG image out of this 
+		// Generate an SVG image out of this
 		return sprintf(
-			'<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg" 
+			'<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink">
 				%s
 			</svg>',

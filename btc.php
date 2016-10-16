@@ -11,7 +11,7 @@ class BTCExchangeProvider implements ServiceProvider {
 	public $width;
 	public $height;
 
-	function BTCExchangeProvider() {
+	public function __construct() {
 		$this->cpair = "EUR";
 		$this->width = 800;
 		$this->height = 100;
@@ -49,9 +49,9 @@ class BTCExchangeProvider implements ServiceProvider {
 
 		$rate = $exchange["24h_avg"];
 
-		// Generate an SVG image out of this 
+		// Generate an SVG image out of this
 		return sprintf(
-			'<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg" 
+			'<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink">
                 <text text-anchor="middle" x="50%%" y="80%%" fill="black" style="font-size: %dpx; font-family: %s;">
 					%s/BTC %0.2f

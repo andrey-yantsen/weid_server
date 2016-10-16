@@ -8,6 +8,7 @@ require_once("currency.php");
 require_once("stock.php");
 require_once("btc.php");
 require_once("forecast.php");
+require_once("datetime.php");
 
 function array2js($a) {
 	if (is_array($a)) {
@@ -53,8 +54,6 @@ class Providers {
 // Image rendering stuff
 
 function renderSVG($id) {
-	header('Content-type: image/svg+xml');
-
 	// Read the screen and parse it as JSON
 	$scr = file_get_contents("screens/".$id);
 	$scr = json_decode($scr, true);
@@ -79,7 +78,7 @@ function renderSVG($id) {
 
 	$body = implode("\n", $body);
 
-	$svg = sprintf('<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg" 
+	$svg = sprintf('<svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg"
 	                  xmlns:xlink="http://www.w3.org/1999/xlink">
 	                  %s
 	                </svg>', $scr["width"], $scr["height"], $body);
@@ -93,11 +92,14 @@ function renderSVG($id) {
 
 function renderBMP($id, $numc, $maxwidth, $maxheight) {
 	// Render image
-	$data = renderSVG($_GET["id"]);
+	$data = renderSVG($id);
 	$svg = $data["svg"];
 	// Convert to PNG and scale
 	$im = new Imagick();
-	$im->readImageBlob($svg);
+	$im->setBackgroundColor(new ImagickPixel('white'));
+	if (!$im->readImageBlob($svg)) {
+		throw new \Exception('Not this time');
+	}
 	$im->setImageFormat("png24");
 
 	// Apply max sizes
@@ -170,6 +172,7 @@ function img_compress($buf) {
 			$outb[$outp++] = $bytec-1;
 			$outb[$outp++] = $buf[$i];
 			$i += $bytec;
+
 		} else {
 			if ($accum == 0)
 				$outp++;
